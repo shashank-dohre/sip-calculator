@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Calculators</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Investment Calculators</h1>
+
+        <!-- Tabs for Navigation -->
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab('sip')">SIP Calculator</button>
+            <button class="tab-button" onclick="openTab('lumpsum')">Lumpsum Calculator</button>
+            <button class="tab-button" onclick="openTab('insurance')">Insurance Calculator</button>
+        </div>
+
+        <!-- SIP Calculator Section -->
+        <div id="sip" class="tab-content active">
+            <h2>SIP Calculator</h2>
+            <form id="sip-form">
+                <div class="form-group">
+                    <label for="sip-amount-slider">Monthly SIP Amount:</label>
+                    <input type="range" id="sip-amount-slider" min="1000" max="50000" step="1000" value="10000">
+                    <input type="number" id="sip-amount" value="10000" min="1000">
+                </div>
+                <div class="form-group">
+                    <label for="sip-duration-slider">Investment Duration (in years):</label>
+                    <input type="range" id="sip-duration-slider" min="1" max="30" step="1" value="10">
+                    <input type="number" id="sip-duration" value="10" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="sip-return-slider">Expected Annual Return Rate (%):</label>
+                    <input type="range" id="sip-return-slider" min="1" max="20" step="0.1" value="12">
+                    <input type="number" id="sip-return" value="12" min="1" step="0.1">
+                </div>
+                <button type="button" onclick="calculateSIP()">Calculate SIP</button>
+            </form>
+            <div id="sip-results">
+                <h3>Results</h3>
+                <canvas id="sip-chart" width="400" height="400"></canvas>
+                <p id="sip-future-value"></p>
+            </div>
+        </div>
+
+        <!-- Lumpsum Calculator Section -->
+        <div id="lumpsum" class="tab-content">
+            <h2>Lumpsum Calculator</h2>
+            <form id="lumpsum-form">
+                <div class="form-group">
+                    <label for="lumpsum-amount-slider">Initial Lumpsum Amount:</label>
+                    <input type="range" id="lumpsum-amount-slider" min="10000" max="500000" step="10000" value="100000">
+                    <input type="number" id="lumpsum-amount" value="100000" min="10000">
+                </div>
+                <div class="form-group">
+                    <label for="lumpsum-duration-slider">Investment Duration (in years):</label>
+                    <input type="range" id="lumpsum-duration-slider" min="1" max="30" step="1" value="10">
+                    <input type="number" id="lumpsum-duration" value="10" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="lumpsum-return-slider">Expected Annual Return Rate (%):</label>
+                    <input type="range" id="lumpsum-return-slider" min="1" max="20" step="0.1" value="12">
+                    <input type="number" id="lumpsum-return" value="12" min="1" step="0.1">
+                </div>
+                <button type="button" onclick="calculateLumpsum()">Calculate Lumpsum</button>
+            </form>
+            <div id="lumpsum-results">
+                <h3>Results</h3>
+                <canvas id="lumpsum-chart" width="400" height="400"></canvas>
+                <p id="lumpsum-future-value"></p>
+            </div>
+        </div>
+
+        <!-- Insurance Calculator Section -->
+        <div id="insurance" class="tab-content">
+            <h2>Insurance Calculator</h2>
+            <form id="insurance-form">
+                <div class="form-group">
+                    <label for="insurance-first-year-slider">First Year Payment Amount:</label>
+                    <input type="range" id="insurance-first-year-slider" min="5000" max="200000" step="5000" value="50000">
+                    <input type="number" id="insurance-first-year" value="50000" min="5000">
+                </div>
+                <div class="form-group">
+                    <label for="insurance-payment-slider">Subsequent Annual Payments:</label>
+                    <input type="range" id="insurance-payment-slider" min="5000" max="200000" step="5000" value="50000">
+                    <input type="number" id="insurance-payment" value="50000" min="5000">
+                </div>
+                <div class="form-group">
+                    <label for="insurance-duration-slider">Investment Duration (in years):</label>
+                    <input type="range" id="insurance-duration-slider" min="1" max="30" step="1" value="10">
+                    <input type="number" id="insurance-duration" value="10" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="insurance-return-slider">Expected Annual Return Rate (%):</label>
+                    <input type="range" id="insurance-return-slider" min="1" max="20" step="0.1" value="12">
+                    <input type="number" id="insurance-return" value="12" min="1" step="0.1">
+                </div>
+                <button type="button" onclick="calculateInsurance()">Calculate Insurance</button>
+            </form>
+            <div id="insurance-results">
+                <h3>Results</h3>
+                <canvas id="insurance-chart" width="400" height="400"></canvas>
+                <p id="insurance-future-value"></p>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
