@@ -1,4 +1,7 @@
-
+// Helper function to format numbers with commas
+function formatNumber(num) {
+    return num.toLocaleString();
+}
 
 // Function to show and hide sections based on button clicks
 function showSection(sectionId) {
