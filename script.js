@@ -1,155 +1,161 @@
-// script.js
-
-// Initialize sliders with input fields
-function initializeSliders() {
-    const sliders = [
-        { sliderId: 'sip-amount-slider', inputId: 'sip-amount' },
-        { sliderId: 'sip-duration-slider', inputId: 'sip-duration' },
-        { sliderId: 'sip-return-slider', inputId: 'sip-return' },
-        { sliderId: 'lumpsum-amount-slider', inputId: 'lumpsum-amount' },
-        { sliderId: 'lumpsum-duration-slider', inputId: 'lumpsum-duration' },
-        { sliderId: 'lumpsum-return-slider', inputId: 'lumpsum-return' },
-        { sliderId: 'insurance-first-year-slider', inputId: 'insurance-first-year' },
-        { sliderId: 'insurance-payment-slider', inputId: 'insurance-payment' },
-        { sliderId: 'insurance-duration-slider', inputId: 'insurance-duration' },
-        { sliderId: 'insurance-return-slider', inputId: 'insurance-return' },
-    ];
-
-    sliders.forEach(({ sliderId, inputId }) => {
-        const slider = document.getElementById(sliderId);
-        const input = document.getElementById(inputId);
-        slider.addEventListener('input', () => {
-            input.value = slider.value;
-        });
-        input.addEventListener('input', () => {
-            slider.value = input.value;
-        });
-    });
+// Helper function to format numbers with commas
+function formatNumber(num) {
+    return num.toLocaleString();
 }
 
-// Switch between tabs
-function openTab(tabId) {
-    const tabs = document.querySelectorAll('.tab-content');
-    const buttons = document.querySelectorAll('.tab-button');
-
-    tabs.forEach(tab => {
-        if (tab.id === tabId) {
-            tab.classList.add('active');
+// Function to show and hide sections based on button clicks
+function showSection(sectionId) {
+    const sections = document.querySelectorAll('.calculator-section');
+    sections.forEach(section => {
+        if (section.id === sectionId) {
+            section.style.display = 'block';
         } else {
-            tab.classList.remove('active');
-        }
-    });
-
-    buttons.forEach(button => {
-        if (button.textContent.toLowerCase().includes(tabId)) {
-            button.classList.add('active');
-        } else {
-            button.classList.remove('active');
+            section.style.display = 'none';
         }
     });
 }
 
-// Calculate SIP
+// SIP Calculator
 function calculateSIP() {
-    const amount = parseFloat(document.getElementById('sip-amount').value);
-    const years = parseFloat(document.getElementById('sip-duration').value);
-    const rate = parseFloat(document.getElementById('sip-return').value) / 100;
-
-    if (isNaN(amount) || isNaN(years) || isNaN(rate)) {
-        alert('Please enter valid values.');
-        return;
-    }
+    const monthlyInvestment = parseFloat(document.getElementById('monthlyInvestment').value);
+    const annualReturn = parseFloat(document.getElementById('annualReturnSIP').value) / 100;
+    const years = parseInt(document.getElementById('yearsSIP').value);
 
     const months = years * 12;
-    const monthlyRate = rate / 12;
-    let futureValue = 0;
+    const rate = annualReturn / 12;
+    const futureValue = monthlyInvestment * (((1 + rate) ** months - 1) / rate);
+    const totalInvestment = monthlyInvestment * months;
+    const interestEarned = futureValue - totalInvestment;
+
+    document.getElementById('resultSIP').innerHTML = `
+        <strong>Total Investment:</strong> INR ${formatNumber(totalInvestment.toFixed(2))}<br>
+        <strong>Interest Earned:</strong> INR ${formatNumber(interestEarned.toFixed(2))}<br>
+        <strong>Future Value:</strong> INR ${formatNumber(futureValue.toFixed(2))}
+    `;
+}
+
+// Lumpsum Calculator
+function calculateLumpsum() {
+    const principal = parseFloat(document.getElementById('principal').value);
+    const annualReturn = parseFloat(document.getElementById('annualReturnLumpsum').value) / 100;
+    const years = parseInt(document.getElementById('yearsLumpsum').value);
+
+    const futureValue = principal * ((1 + annualReturn) ** years);
+    const totalInvestment = principal;
+    const interestEarned = futureValue - totalInvestment;
+
+    document.getElementById('resultLumpsum').innerHTML = `
+        <strong>Total Investment:</strong> INR ${formatNumber(totalInvestment.toFixed(2))}<br>
+        <strong>Interest Earned:</strong> INR ${formatNumber(interestEarned.toFixed(2))}<br>
+        <strong>Future Value:</strong> INR ${formatNumber(futureValue.toFixed(2))}
+    `;
+}
+
+// Insurance Calculator
+function calculateInsurance() {
+    const annualPremium = parseFloat(document.getElementById('annualPremium').value);
+    const firstYearPayment = parseFloat(document.getElementById('firstYearPremium').value);
+    const annualReturn = parseFloat(document.getElementById('annualReturnInsurance').value) / 100;
+    const years = parseInt(document.getElementById('yearsInsurance').value);
+
+    const futureValue = firstYearPayment * ((1 + annualReturn) ** years) + (annualPremium * (((1 + annualReturn) ** years - 1) / annualReturn));
+    const totalInvestment = firstYearPayment + (annualPremium * (years - 1));
+    const interestEarned = futureValue - totalInvestment;
+
+    document.getElementById('resultInsurance').innerHTML = `
+        <strong>Total Investment:</strong> INR ${formatNumber(totalInvestment.toFixed(2))}<br>
+        <strong>Interest Earned:</strong> INR ${formatNumber(interestEarned.toFixed(2))}<br>
+        <strong>Future Value:</strong> INR ${formatNumber(futureValue.toFixed(2))}
+    `;
+}
+
+// SWP Calculator
+function calculateSWP() {
+    const initialInvestment = parseFloat(document.getElementById('initialInvestmentSWP').value);
+    const monthlyWithdrawal = parseFloat(document.getElementById('monthlyWithdrawal').value);
+    const annualReturn = parseFloat(document.getElementById('annualReturnSWP').value) / 100;
+    const years = parseInt(document.getElementById('yearsSWP').value);
+
+    const months = years * 12;
+    const rate = annualReturn / 12;
+    let balance = initialInvestment;
+    let totalWithdrawn = 0;
 
     for (let i = 0; i < months; i++) {
-        futureValue = (futureValue + amount) * (1 + monthlyRate);
+        balance = balance * (1 + rate) - monthlyWithdrawal;
+        if (balance < 0) break;
+        totalWithdrawn += monthlyWithdrawal;
     }
 
-    document.getElementById('sip-future-value').innerText = `Future Value: ₹${futureValue.toFixed(2)}`;
-    drawDonutChart('sip-chart', amount * months, futureValue);
+    const futureValue = balance;
+    const totalInvestment = initialInvestment;
+    const interestEarned = totalWithdrawn - totalInvestment;
+
+    document.getElementById('resultSWP').innerHTML = `
+        <strong>Total Investment:</strong> INR ${formatNumber(totalInvestment.toFixed(2))}<br>
+        <strong>Total Withdrawn:</strong> INR ${formatNumber(totalWithdrawn.toFixed(2))}<br>
+        <strong>Interest Earned:</strong> INR ${formatNumber(interestEarned.toFixed(2))}<br>
+        <strong>Remaining Balance:</strong> INR ${formatNumber(futureValue.toFixed(2))}
+    `;
 }
 
-// Calculate Lumpsum
-function calculateLumpsum() {
-    const amount = parseFloat(document.getElementById('lumpsum-amount').value);
-    const years = parseFloat(document.getElementById('lumpsum-duration').value);
-    const rate = parseFloat(document.getElementById('lumpsum-return').value) / 100;
-
-    if (isNaN(amount) || isNaN(years) || isNaN(rate)) {
-        alert('Please enter valid values.');
-        return;
-    }
-
-    const futureValue = amount * Math.pow(1 + rate, years);
-    document.getElementById('lumpsum-future-value').innerText = `Future Value: ₹${futureValue.toFixed(2)}`;
-    drawDonutChart('lumpsum-chart', amount, futureValue);
-}
-
-// Calculate Insurance
-function calculateInsurance() {
-    const firstYearAmount = parseFloat(document.getElementById('insurance-first-year').value);
-    const subsequentPayment = parseFloat(document.getElementById('insurance-payment').value);
-    const years = parseFloat(document.getElementById('insurance-duration').value);
-    const rate = parseFloat(document.getElementById('insurance-return').value) / 100;
-
-    if (isNaN(firstYearAmount) || isNaN(subsequentPayment) || isNaN(years) || isNaN(rate)) {
-        alert('Please enter valid values.');
-        return;
-    }
+// Step-up SIP Calculator
+function calculateStepUpSIP() {
+    const initialInvestment = parseFloat(document.getElementById('initialInvestmentStepUp').value);
+    const stepUpAmount = parseFloat(document.getElementById('stepUpAmount').value);
+    const stepUpPeriod = parseInt(document.getElementById('stepUpPeriod').value);
+    const annualReturn = parseFloat(document.getElementById('annualReturnStepUp').value) / 100;
+    const years = parseInt(document.getElementById('yearsStepUp').value);
 
     const months = years * 12;
-    const monthlyRate = rate / 12;
+    let totalInvestment = 0;
     let futureValue = 0;
+    let monthlyInvestment = initialInvestment;
 
-    // First year contribution
-    futureValue = (firstYearAmount) * Math.pow(1 + monthlyRate, months);
-    
-    // Subsequent years contribution
-    for (let i = 12; i < months; i++) {
-        futureValue = (futureValue + subsequentPayment) * (1 + monthlyRate);
+    for (let i = 0; i < months; i++) {
+        futureValue = (futureValue + monthlyInvestment) * (1 + annualReturn / 12);
+        totalInvestment += monthlyInvestment;
+        if ((i + 1) % (stepUpPeriod * 12) === 0) {
+            monthlyInvestment += stepUpAmount;
+        }
     }
 
-    document.getElementById('insurance-future-value').innerText = `Future Value: ₹${futureValue.toFixed(2)}`;
-    drawDonutChart('insurance-chart', firstYearAmount + (subsequentPayment * (months - 12) / 12), futureValue);
+    const interestEarned = futureValue - totalInvestment;
+
+    document.getElementById('resultStepUp').innerHTML = `
+        <strong>Total Investment:</strong> INR ${formatNumber(totalInvestment.toFixed(2))}<br>
+        <strong>Interest Earned:</strong> INR ${formatNumber(interestEarned.toFixed(2))}<br>
+        <strong>Future Value:</strong> INR ${formatNumber(futureValue.toFixed(2))}
+    `;
 }
 
-// Draw Donut Chart
-function drawDonutChart(canvasId, initialAmount, futureValue) {
-    const ctx = document.getElementById(canvasId).getContext('2d');
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Initial Investment', 'Future Value'],
-            datasets: [{
-                data: [initialAmount, futureValue - initialAmount],
-                backgroundColor: ['#ff6384', '#36a2eb'],
-                borderColor: '#fff',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(tooltipItem) {
-                            return tooltipItem.label + ': ₹' + tooltipItem.raw.toFixed(2);
-                        }
-                    }
-                }
-            }
+// Fixed Duration Step-up SIP Calculator
+function calculateFixedDurationStepUpSIP() {
+    const initialInvestment = parseFloat(document.getElementById('initialInvestmentFixed').value);
+    const stepUpAmount = parseFloat(document.getElementById('stepUpAmountFixed').value);
+    const stepUpYears = parseInt(document.getElementById('stepUpYears').value);
+    const annualReturn = parseFloat(document.getElementById('annualReturnFixed').value) / 100;
+    const totalYears = parseInt(document.getElementById('totalYearsFixed').value);
+
+    const months = totalYears * 12;
+    const stepUpMonths = stepUpYears * 12;
+    let totalInvestment = 0;
+    let futureValue = 0;
+    let monthlyInvestment = initialInvestment;
+
+    for (let i = 0; i < months; i++) {
+        futureValue = (futureValue + monthlyInvestment) * (1 + annualReturn / 12);
+        totalInvestment += monthlyInvestment;
+        if ((i + 1) % stepUpMonths === 0) {
+            monthlyInvestment += stepUpAmount;
         }
-    });
-}
+    }
 
-// Initialize sliders and default tab on page load
-document.addEventListener('DOMContentLoaded', () => {
-    initializeSliders();
-    openTab('sip');
-});
+    const interestEarned = futureValue - totalInvestment;
+
+    document.getElementById('resultFixed').innerHTML = `
+        <strong>Total Investment:</strong> INR ${formatNumber(totalInvestment.toFixed(2))}<br>
+        <strong>Interest Earned:</strong> INR ${formatNumber(interestEarned.toFixed(2))}<br>
+        <strong>Future Value:</strong> INR ${formatNumber(futureValue.toFixed(2))}
+    `;
+}
